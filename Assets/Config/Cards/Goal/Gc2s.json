@@ -1,0 +1,7 @@
+﻿{
+    "Id": "Gc2s",
+    "Name": "Convert 2 straw to 1 VP",
+    "NumResources": 2,
+    "ResourceType": "Straw",
+    "VP": 1
+}

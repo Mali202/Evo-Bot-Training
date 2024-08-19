@@ -1,0 +1,9 @@
+{
+  "Id": "Itrms1b",
+  "Name": "Transfer 1 brick from machine to player",
+  "Brick": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "From": 0,
+  "To": 4
+}

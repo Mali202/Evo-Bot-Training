@@ -1,0 +1,9 @@
+{
+  "Id": "Ibl3b2",
+  "Name": "Exchange 2 VP from machine to player for 3 brick",
+  "Brick": 3,
+  "VP": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "Player": 4
+}

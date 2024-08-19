@@ -1,0 +1,9 @@
+{
+  "Id": "Itrse1w",
+  "Name": "Transfer 2 wood from south to east",
+  "Wood": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "From": 4,
+  "To": 3
+}

@@ -1,0 +1,8 @@
+{
+  "Id": "Ilo2b",
+  "Name": "Loop 2 brick",
+  "Brick": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Loop",
+  "Player": 4
+}

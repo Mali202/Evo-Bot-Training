@@ -1,0 +1,23 @@
+[
+  "OnBuilt",
+  "OnGameStarted",
+  "OnWaitingPlayerInput",
+  "OnPlayerChanged",
+  "OnReceivedPlayerInput",
+  "OnCardPlaced",
+  "OnCardDrawn",
+  "OnCardDiscarded",
+  "OnStateChange",
+  "OnExecuteCard",
+  "OnGridExecuted",
+  "OnTurnComplete",
+  "OnExecuteEnter",
+  "OnCalculateEnter",
+  "OnPlacementEnter",
+  "OnGameCompleted",
+  "OnGoalCardsActivated",
+  "OnCardRotated",
+  "OnCardSwap",
+  "OnPlayerSkipped",
+  "OnChangeDirection"
+]

@@ -1,0 +1,154 @@
+{
+    "Rules": [
+        {
+            "Triggers": [ "OnBuilt" ],
+            "Conditions": {},
+            "Actions": {
+                "SetState": {
+                    "from": "GameSetup",
+                    "to": "PlacementMode"
+                }
+            },
+            "Comment": "On build game -> change state to placement mode"
+        },
+        {
+            "Triggers": [ "OnGameStarted" ],
+            "Conditions": {},
+            "Actions": {
+                "GetNextPlayer": {}
+            },
+            "Comment": "On start game -> get next player"
+        },
+        {
+            "Triggers": [ "OnPlayerChanged" ],
+            "Conditions": {},
+            "Actions": {
+                "CanPlay": {}
+            },
+            "Comment": "check if this player can play an action -> if yes than Wait for input, if no GetNextPlayer"
+
+        },
+        {
+            "Triggers": [ "OnWaitingPlayerInput" ],
+            "Conditions": {},
+            "Actions": {},
+            "Comment": "if waiting for input from the player -> get all their possible actions"
+
+        },
+        {
+            "Triggers": [ "OnReceivedPlayerInput" ],
+            "Conditions": {},
+            "Actions": {
+                "ExecuteAction": {},
+                "CheckRemainingActions": {}
+            },
+            "Comment": "execute the action the player has selected to play and check if they have remaining actions in their turn"
+        },
+        {
+            "Triggers": [ "OnCardPlaced" ],
+            "Conditions": {
+                "StateIs": "PlacementMode",
+                "isFull": true
+            },
+            "Actions": {
+                "SetState": {
+                    "from": "PlacementMode",
+                    "to": "EditMode"
+                },
+                "GiveEdit": {}
+            },
+            "Comment": "if State = PlacementMode & grid is full -> change state to edit mode"
+        },
+        {
+            "Triggers": [ "OnCardDrawn" ],
+            "Conditions": {},
+            "Actions": {
+                "UpdateDecks": {}
+            },
+            "Comment": "when a card is drawn -> check and update decks if need be"
+        },
+        {
+            "Triggers": [ "OnCardDiscarded" ],
+            "Conditions": {
+                "isHandEmpty": true
+            },
+            "Actions": {
+                "RestockHand": {}
+            },
+            "Comment": "when a card is discarded and the players hand is empty -> draw 3 cards from draw deck"
+        },
+        {
+            "Triggers": [ "OnExecuteCard" ],
+            "Conditions": {},
+            "Actions": {
+                "ExecuteCard": {}
+            },
+            "Comment": "Execute current card and get next card to be executed"
+        },
+        {
+            "Triggers": [ "OnGridExecuted" ],
+            "Conditions": {},
+            "Actions": {
+                "ClearGrid": {},
+                "CheckFinal": {}
+            },
+            "Comment": "when grid has been executed, check if we're in the final round -> if yes go to calculate mode else placement mode"
+        },
+        {
+            "Triggers": [ "OnTurnComplete" ],
+            "Conditions": {
+                "StateIs": "PlacementMode"
+            },
+            "Actions": {
+                "GetNextPlayer": {}
+            },
+            "Comment": "Get next player when current turn is complete"
+        },
+        {
+            "Triggers": [ "OnTurnComplete" ],
+            "Conditions": {
+                "StateIs": "EditMode"
+            },
+            "Actions": {
+                "GetNextEdit": {}
+            },
+            "Comment": "Check if there are any players with edits -> if yes GetNextPlayer else go to calculate mode"
+        },
+        {
+            "Triggers": [ "OnExecuteEnter" ],
+            "Conditions": {},
+            "Actions": {
+                "SetState": {
+                    "from": "EditMode",
+                    "to": "ExecuteMode"
+                },
+                "ExecuteGrid": {}
+            },
+            "Comment": "Execute the grid"
+        },
+        {
+            "Triggers": [ "OnPlacementEnter" ],
+            "Conditions": {},
+            "Actions": {
+                "SetState": {
+                    "from": "ExecuteMode",
+                    "to": "PlacementMode"
+                },
+                "GetNextPlayer": {}
+            },
+            "Comment": "Get next player for new round"
+        },
+        {
+            "Triggers": [ "OnCalculateEnter" ],
+            "Conditions": {},
+            "Actions": {
+                "SetState": {
+                    "from": "ExecuteMode",
+                    "to": "CalculateMode"
+                },
+                "CalculateVP": {}
+            },
+            "Comment": "Calculate Victory points and determine winner"
+        }
+    ]
+}

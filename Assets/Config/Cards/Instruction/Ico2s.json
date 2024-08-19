@@ -1,0 +1,8 @@
+{
+  "Id": "Ico2s",
+  "Name": "Condition 2 straw",
+  "Straw": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Condition",
+  "Player": 4
+}

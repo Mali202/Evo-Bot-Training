@@ -1,0 +1,9 @@
+{
+  "Id": "Itrms1w",
+  "Name": "Transfer 1 wood from machine to player",
+  "Wood": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "From": 0,
+  "To": 4
+}

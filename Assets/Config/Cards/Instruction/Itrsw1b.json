@@ -1,0 +1,9 @@
+{
+  "Id": "Itrsw1b",
+  "Name": "Transfer 1 brick from south to west",
+  "Brick": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "From": 4,
+  "To": 1
+}

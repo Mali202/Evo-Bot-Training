@@ -1,0 +1,6 @@
+﻿{
+    "Id": "Gmb",
+    "Name":  "Get 5 VP for having the most Straw",
+    "ResourceType": "Straw",
+    "VP": 5
+}

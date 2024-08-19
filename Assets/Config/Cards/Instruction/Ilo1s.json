@@ -1,0 +1,8 @@
+{
+  "Id": "Ilo1s",
+  "Name": "Loop 1 straw",
+  "Straw": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Loop",
+  "Player": 4
+}

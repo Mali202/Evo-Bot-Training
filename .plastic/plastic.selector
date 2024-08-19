@@ -1,0 +1,4 @@
+repository "Evo Bot Training@Mali202@cloud"
+  path "/"
+    br "/main"
+    co "/main"

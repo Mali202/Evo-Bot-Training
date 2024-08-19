@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgb(108, 108, 108);">
+        <ui:Label tabindex="-1" text="Blueprints: P3" parse-escape-sequences="true" display-tooltip-when-elided="true" style="justify-content: flex-start; align-self: auto; font-size: 25px; margin-bottom: 10px;" />
+        <ui:Button text="Start game" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Start" />
+        <ui:DropdownField label="Action" name="ActionDropdown" />
+        <ui:VisualElement style="flex-grow: 1; align-items: flex-start; justify-content: flex-start; align-self: center; flex-direction: row;">
+            <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="TriggerList" />
+            <ui:Label tabindex="-1" text="Player Stats:&#10;Player 1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Info" style="align-items: auto;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

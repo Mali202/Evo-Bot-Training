@@ -1,0 +1,8 @@
+﻿{
+  "Id": "Ist1b",
+  "Name": "Steal 1 brick",
+  "Brick": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "FromPlayer": 4
+}

@@ -1,0 +1,151 @@
+{
+  "Rules": [
+    {
+      "Triggers": [ "OnBuilt" ],
+      "Conditions": {},
+      "Actions": {
+        "SetState": {
+          "from": "GameSetup",
+          "to": "PlacementMode"
+        },
+        "getNextPlayer": {}
+      },
+      "Comment": "On build game -> change state to placement mode"
+    },
+    {
+      "Triggers": [ "OnStateChanged" ],
+      "Conditions": {
+        "StateIs": "PlacementMode"
+      },
+      "Actions": {
+        "SetState": {
+          "from": "GameSetup",
+          "to": "PlacementMode"
+        },
+        "getNextPlayer": {}
+      },
+      "Comment": "On build game -> change state to placement mode"
+    },
+    {
+      "Triggers": [ "OnCardPlaced" ],
+      "Conditions": {
+        "StateIs": "PlacementMode",
+        "isFull": false
+      },
+      "Actions": {
+        "GetNextPlayer": {}
+      },
+      "Comment": "if State = PlacementMode & grid is not full -> get the next player"
+
+    },
+    {
+      "Triggers": [ "OnWaitingPlayerInput" ],
+      "Conditions": {},
+      "Actions": {},
+      "Comment": "if waiting for input from the player -> get all thier possible actions"
+
+    },
+    {
+      "Triggers": [ "OnPlayerChanged" ],
+      "Conditions": {},
+      "Actions": {
+        "CanPlay": {}
+      },
+      "Comment": "check if this player can play an action -> if yes then display valid actions and Wait for input, if no GetNextPlayer"
+
+    },
+    {
+      "Triggers": [ "OnReceivedPlayerInput" ],
+      "Conditions": {},
+      "Actions": {
+        "ExecuteAction": {},
+        "CheckRemainingActions": {}
+      },
+      "Comment": "execute the action the player has selected to play and check if they have remaining actions in their turn"
+
+    },
+    {
+      "Triggers": [ "OnCardPlaced" ],
+      "Conditions": {
+        "StateIs": "PlacementMode",
+        "isFull": true
+      },
+      "Actions": {
+        "SetState": {
+          "from": "PlacementMode",
+          "to": "EditMode"
+        },
+        "GiveEdit": {}
+      },
+      "Comment": "if State = PlacementMode & grid is full -> change State to EditMode and give all players except cur player the ability to edit"
+    },
+
+    {
+      "Triggers": [
+        { "StateIs": { "state": "EditMode" } },
+        { "isFull": false }
+      ],
+      "Conditions": {},
+      "Actions": {
+        "SetState": {
+          "from": "EditMode",
+          "to": "PlacementMode"
+        },
+        "GetNextPlayer": {}
+      },
+      "Comment": "if State = EditMode & grid is not full -> change State to PlacementMode and get the next player"
+
+    },
+    {
+      "Triggers": [
+        { "StateIs": { "state": "EditMode" } },
+        { "isFull": true }
+      ],
+      "Conditions": {},
+      "Actions": {
+        "SetState": {
+          "from": "EditMode",
+          "to": "ExecuteMode"
+        }
+      },
+      "Comment": "if State = EditMode & grid is full -> change State to Execute mode"
+
+    },
+    {
+      "Triggers": [
+        { "StateIs": { "state": "ExecuteMode" } }
+      ],
+      "Conditions": {},
+      "Actions": {
+        "ExecuteGrid": {},
+        "CheckFinalRound": {}
+      },
+      "Comment": "if State = ExecuteMode, execute grid  and check if the current round is the final round"
+
+    },
+    {
+      "Triggers": [ "isFinalRound" ],
+      "Conditions": {},
+      "Actions": {
+        "SetState": {
+          "from": "ExecuteMode",
+          "to": "CalculateMode"
+        }
+      },
+      "Comment": "If final round -> set state to calculate mode"
+    },
+    {
+      "Triggers": [ "NotFinalRound" ],
+      "Conditions": {},
+      "Actions": {
+        "ClearGrid": {},
+        "SetState": {
+          "from": "ExecuteMode",
+          "to": "PlacementMode"
+        }
+      },
+      "Comment": "If Not final round -> set state to placement mode"
+    }
+
+  ]
+}

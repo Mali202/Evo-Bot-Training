@@ -1,0 +1,9 @@
+{
+  "Id": "Ibl3w2",
+  "Name": "Exchange 2 VP from machine to player for 3 wood",
+  "Wood": 3,
+  "VP": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "Player": 4
+}

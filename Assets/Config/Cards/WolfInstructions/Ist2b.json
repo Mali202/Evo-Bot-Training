@@ -1,0 +1,8 @@
+{
+    "Id": "Ists2b",
+    "Name": "Steal 2 brick",
+    "Brick": 2,
+    "Rotatable": true,
+    "PlacementRuleType": "Sequence",
+    "FromPlayer":  4
+}

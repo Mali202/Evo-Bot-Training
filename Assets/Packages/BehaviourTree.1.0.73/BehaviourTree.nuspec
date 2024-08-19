@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>BehaviourTree</id>
+    <version>1.0.73</version>
+    <authors>BehaviourTree</authors>
+    <owners>BehaviourTree</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/Eraclys/BehaviourTree/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Eraclys/BehaviourTree/</projectUrl>
+    <description>A simple c# behaviour tree library.</description>
+    <tags>c# behavior behaviour tree behaviourtree behaviortree ai bot</tags>
+    <repository url="https://github.com/Eraclys/BehaviourTree/" />
+    <dependencies>
+      <group targetFramework=".NETStandard1.0">
+        <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

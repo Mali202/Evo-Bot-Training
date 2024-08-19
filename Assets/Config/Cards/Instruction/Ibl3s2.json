@@ -1,0 +1,9 @@
+{
+  "Id": "Ibl3s2",
+  "Name": "Exchange 2 VP from machine to player for 3 straw",
+  "Straw": 3,
+  "VP": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "Player": 4
+}

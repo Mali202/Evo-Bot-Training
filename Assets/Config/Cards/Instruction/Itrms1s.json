@@ -1,0 +1,9 @@
+﻿{
+  "Id": "Itrms1s",
+  "Name": "Transfer 1 straw from machine to player",
+  "Straw": 1,
+  "Rotatable": true,
+  "PlacementRuleType": "Sequence",
+  "From": 0,
+  "To": 4
+}

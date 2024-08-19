@@ -1,0 +1,8 @@
+{
+  "Id": "Ico2w",
+  "Name": "Condition 2 wood",
+  "Wood": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Condition",
+  "Player": 4
+}

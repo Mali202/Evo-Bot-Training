@@ -1,0 +1,8 @@
+{
+  "Id": "Ico2b",
+  "Name": "Condition 2 brick",
+  "Brick": 2,
+  "Rotatable": true,
+  "PlacementRuleType": "Condition",
+  "Player": 4
+}

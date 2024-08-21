@@ -10,8 +10,8 @@ namespace Model.Bots
 {
     public abstract class Bot : Player, IListener
     {
-        private static Game? game;
-        private static ILogger? logger;
+        private static Game game;
+        private static ILogger logger;
 
         public Bot(bool isWolf, string Name, int playerNumber) : base(isWolf, Name, playerNumber)
         {

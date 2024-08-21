@@ -5,6 +5,7 @@ using Model.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,6 +17,7 @@ public class UIEvents : MonoBehaviour, IListener
     public GameObject evoBotPrefab;
     private Controller.Controller Controller;
     EventCallback<ClickEvent> callback;
+    public bool training;
 
 
 
@@ -26,8 +28,10 @@ public class UIEvents : MonoBehaviour, IListener
         button = doc.rootVisualElement.Q<Button>("Start");
         callback = (ev) => Controller.StartGame();
         button.RegisterCallback(callback);
-        
-        
+
+        //Academy
+        Academy.Instance.OnEnvironmentReset += EnvironmentReset;
+
         //Build game
         Controller = new(new List<IListener>() { this });
 
@@ -45,6 +49,12 @@ public class UIEvents : MonoBehaviour, IListener
 
         Controller.SetPlayers(playerList);
         Controller.SetupGame();
+    }
+
+    void EnvironmentReset()
+    {
+        // Reset the scene here
+        //Academy.Instance.EnvironmentParameters.
     }
 
     public void AddToList(string trigger)

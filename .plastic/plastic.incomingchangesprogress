@@ -1,0 +1,52 @@
+[
+  {
+    "MountId": "56e62dd7-241f-41e9-8c6b-dd4ca4513e62",
+    "AncestorCsetIds": [
+      1
+    ],
+    "SourceCsetId": 2,
+    "DestinationCsetId": 1,
+    "FileConflicts": [
+      {
+        "Path": "/Packages/manifest.json",
+        "ItemId": 131,
+        "ParentItemId": 127,
+        "BaseRevId": 102,
+        "SourceRevId": 1151,
+        "DestinationRevId": 102
+      },
+      {
+        "Path": "/Packages/packages-lock.json",
+        "ItemId": 132,
+        "ParentItemId": 127,
+        "BaseRevId": 103,
+        "SourceRevId": 1152,
+        "DestinationRevId": 103
+      },
+      {
+        "Path": "/ProjectSettings/PackageManagerSettings.asset",
+        "ItemId": 142,
+        "ParentItemId": 129,
+        "BaseRevId": 113,
+        "SourceRevId": 1153,
+        "DestinationRevId": 113
+      },
+      {
+        "Path": "/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json",
+        "ItemId": 158,
+        "ParentItemId": 156,
+        "BaseRevId": 114,
+        "SourceRevId": 1154,
+        "DestinationRevId": 114
+      },
+      {
+        "Path": "/ProjectSettings/ProjectSettings.asset",
+        "ItemId": 147,
+        "ParentItemId": 129,
+        "BaseRevId": 117,
+        "SourceRevId": 1155,
+        "DestinationRevId": 117
+      }
+    ]
+  }
+]

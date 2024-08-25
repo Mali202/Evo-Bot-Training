@@ -5,6 +5,7 @@ using Model.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,6 +14,8 @@ public class UIEvents : MonoBehaviour, IListener
     UIDocument doc;
     Button button;
     ScrollView triggerList;
+    DropdownField actionDropdown;
+
     public GameObject evoBotPrefab;
     private Controller.Controller Controller;
     EventCallback<ClickEvent> callback;
@@ -24,9 +27,10 @@ public class UIEvents : MonoBehaviour, IListener
         doc = GetComponent<UIDocument>();
         triggerList = doc.rootVisualElement.Q<ScrollView>("TriggerList");
         button = doc.rootVisualElement.Q<Button>("Start");
+        actionDropdown = doc.rootVisualElement.Q<DropdownField>("ActionDropdown");
+
         callback = (ev) => Controller.StartGame();
         button.RegisterCallback(callback);
-        
         
         //Build game
         Controller = new(new List<IListener>() { this });
@@ -34,27 +38,33 @@ public class UIEvents : MonoBehaviour, IListener
         List<Player> playerList = new()
         {
             //Instantiate players
-            new RandomBot(false, "Random 1", 1)
+            new Player(false, "Random 1", 1)
         };
 
         //Add evobot
         GameObject evo = Instantiate(evoBotPrefab);
         EvoBotAgent evoAgent = evo.GetComponent<EvoBotAgent>();
 
-        playerList.Add(evoAgent.InitializeBot(false, "Evo", 2));
+        //playerList.Add(evoAgent.InitializeBot(false, "Evo", 2));
 
         Controller.SetPlayers(playerList);
         Controller.SetupGame();
     }
 
-    public void AddToList(string trigger)
+    public void AddToList(string message)
     {
-        Label label = new Label("Clicked");
+        Label label = new Label(message);
         label.style.fontSize = 25;
+        label.style.color = Color.blue;
         triggerList.hierarchy.Add(label);
     }
 
-    
+    public void RegisterCallback(EventCallback<ClickEvent> newCallback)
+    {
+        button.UnregisterCallback(callback);
+        callback = newCallback;
+        button.RegisterCallback(callback);
+    }
 
     //Game manager
     public void Broadcast(Trigger trigger)
@@ -77,92 +87,90 @@ public class UIEvents : MonoBehaviour, IListener
                 Controller.UpdateGame();
                 break;
 
-                //case Constants.OnWaitingPlayerInput:
-                //    Player curPlayer = (Player)trigger.TriggerData[Constants.Player];
-                //    if (!curPlayer.GetType().IsSubclassOf(typeof(Bot)))
-                //    {
-                //        GetPlayerInput(curPlayer.Name, (List<IAction>)trigger.TriggerData[Constants.Actions]);
-                //    }
-                //    AnsiConsole.MarkupLine("[green]Bot turn...[/]");
-                //    break;
+            case Constants.OnWaitingPlayerInput:
+                Player curPlayer = (Player)trigger.TriggerData[Constants.Player];
+                if (!curPlayer.GetType().IsSubclassOf(typeof(Bot)))
+                {
+                    GetPlayerInput(curPlayer.Name, (List<IAction>)trigger.TriggerData[Constants.Actions]);
+                }
+                break;
 
-                //case Constants.OnCardPlaced:
-                //    CardPlaced((string)trigger.TriggerData[Constants.Player], (GameGrid)trigger.TriggerData[Constants.CurrentGrid]);
-                //    break;
+            case Constants.OnCardPlaced:
+                CardPlaced((string)trigger.TriggerData[Constants.Player], (GameGrid)trigger.TriggerData[Constants.CurrentGrid]);
+                break;
 
-                //case Constants.OnCardDiscarded:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnCardDiscarded:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnCardDrawn:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnCardDrawn:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnPlayerChanged:
-                //    AnsiConsole.MarkupLine("[green]Player has been changed[/]");
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnPlayerChanged:
+                //AnsiConsole.MarkupLine("[green]Player has been changed[/]");
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnReceivedPlayerInput:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnReceivedPlayerInput:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnTurnComplete:
-                //    AnsiConsole.MarkupLine("[green]Player's turn is complete[/]");
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnTurnComplete:
+                //AnsiConsole.MarkupLine("[green]Player's turn is complete[/]");
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnStateChange:
-                //    AnsiConsole.MarkupLine($"[bold]Moving to [green]{trigger.TriggerData[Constants.ToState]}[/][/]");
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnStateChange:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnExecuteCard:
-                //    Placement placement = (Placement)trigger.TriggerData[Constants.Placement];
-                //    AnsiConsole.MarkupLine($"Executing card '{placement.Instruction.Name}' at (Row: {placement.Row}, Column {placement.Col})");
-                //    if (!AnsiConsole.Confirm("Continue?"))
-                //    {
-                //        AnsiConsole.MarkupLine("Ending");
-                //        return;
-                //    }
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnExecuteCard:
+                Placement placement = (Placement)trigger.TriggerData[Constants.Placement];
+                Debug.Log($"Executing card '{placement.Instruction.Name}' at (Row: {placement.Row}, Column {placement.Col})");
+                button.text = "Execute card";
+                void newCallback(ClickEvent ev)
+                {
+                    Controller.UpdateGame();
+                }
+                RegisterCallback(newCallback);
+                break;
 
-                //case Constants.OnGridExecuted:
-                //    DisplayPlayers((List<Player>)trigger.TriggerData[Constants.Players]);
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnGridExecuted:
+                DisplayPlayers((List<Player>)trigger.TriggerData[Constants.Players]);
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnExecuteEnter:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnExecuteEnter:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnPlacementEnter:
-                //    DisplayGrid((GameGrid)trigger.TriggerData[Constants.CurrentGrid]);
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnPlacementEnter:
+                //DisplayGrid((GameGrid)trigger.TriggerData[Constants.CurrentGrid]);
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnGoalCardsActivated:
-                //    DisplayGoalCardStatus((List<Player>)trigger.TriggerData[Constants.Players]);
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnGoalCardsActivated:
+                //DisplayGoalCardStatus((List<Player>)trigger.TriggerData[Constants.Players]);
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnCalculateEnter:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnCalculateEnter:
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnGameCompleted:
-                //    Player winner = (Player)trigger.TriggerData[Constants.Player];
-                //    AnsiConsole.MarkupLine($"The winner is [green]{winner.Name}[/] with {winner.VP_Count} victory points!");
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnGameCompleted:
+                Player winner = (Player)trigger.TriggerData[Constants.Player];
+                AddToList($"The winner is [green]{winner.Name}[/] with {winner.VP_Count} victory points!");
+                Controller.UpdateGame();
+                break;
 
-                //case Constants.OnCardRotated:
-                //case Constants.OnCardSwap:
-                //case Constants.OnPlayerSkipped:
-                //case Constants.OnChangeDirection:
-                //    controller.UpdateGame();
-                //    break;
+            case Constants.OnCardRotated:
+            case Constants.OnCardSwap:
+            case Constants.OnPlayerSkipped:
+            case Constants.OnChangeDirection:
+                Controller.UpdateGame();
+                break;
         }
     }
 
@@ -173,5 +181,24 @@ public class UIEvents : MonoBehaviour, IListener
         {
             labelText += player.Name;
         }
+    }
+
+    private void CardPlaced(string player, GameGrid gameGrid)
+    {
+        //AnsiConsole.MarkupLine($"Player [green]{player}[/] has placed a card");
+        Controller.UpdateGame();
+        //DisplayGrid(gameGrid);
+    }
+
+    private void GetPlayerInput(string playerName, List<IAction> actions)
+    {
+        AddToList($"Waiting for input from {playerName}");
+        button.text = "Select action";
+        actionDropdown.choices = actions.Select(action => action.GetDescription()).ToList();
+        void newCallback(ClickEvent ev)
+        {
+            Debug.Log(actions[actionDropdown.index].GetDescription());
+        }
+        RegisterCallback(newCallback);
     }
 }

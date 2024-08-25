@@ -48,28 +48,28 @@ public class EvoBotAgent : Agent, IListener
     {
         Game game = bot.Game;
 
-        // player number
+        // player number: 1
         sensor.AddObservation(bot.playerNumber);
 
-        // number of players
+        // number of players: 1
         sensor.AddObservation(game.NumPlayers);
 
-        // grid
+        // grid: 19
         sensor.AddObservation(EncodeGrid(game.GameGrid.Placements).Select(x => (float)x).ToArray());
 
-        // face up deck cards
-        sensor.AddObservation(EncodeDeck(game.FaceUp.Cards, 5).Select(x => (float)x).ToArray());
+        // face up deck cards: 3
+        sensor.AddObservation(EncodeDeck(game.FaceUp.Cards, 3).Select(x => (float)x).ToArray());
 
-        // VP count
+        // VP count: 1
         sensor.AddObservation(bot.VP_Count);
 
-        // resource counts
+        // resource counts: 3
         sensor.AddObservation(new float[] { bot.BrickCount, bot.StrawCount, bot.WoodCount});
 
-        // hand count
+        // hand count: 1
         sensor.AddObservation(bot.Hand.Cards.Count);
 
-        // cards in hand
+        // cards in hand: 5
         sensor.AddObservation(EncodeDeck(bot.Hand.Cards, 5).Select(x => (float)x).ToArray());
     }
 

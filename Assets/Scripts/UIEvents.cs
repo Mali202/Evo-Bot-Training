@@ -19,6 +19,7 @@ public class UIEvents : MonoBehaviour, IListener
     public GameObject evoBotPrefab;
     private Controller.Controller Controller;
     EventCallback<ClickEvent> callback;
+    public bool training;
 
 
 

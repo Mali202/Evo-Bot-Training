@@ -51,7 +51,7 @@ public class EvoBotAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        base.OnEpisodeBegin();
+        Debug.Log("OnEpisodeBegin called");
     }
 
     public override void Initialize()

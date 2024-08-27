@@ -42,15 +42,18 @@ namespace Controller
             //Load action generator
             ActionGenerator actionGenerator = ActionGenerator.Instance;
             actionGenerator.Game = Game;
-            actionGenerator.generatorKey.Add(typeof(Skip), new SkipActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Swap), new SwapActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Replace), new ReplaceActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Rotate), new RotateActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(ChangeDirection), new ChangeDirectionActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Instruction), new InstructionActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Draw), new DrawActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(Discard), new DiscardActionGenerator());
-            actionGenerator.generatorKey.Add(typeof(PlaceFromHand), new PlaceFromHandActionGenerator());
+            actionGenerator.generatorKey = new()
+            {
+                { typeof(Skip), new SkipActionGenerator() },
+                { typeof(Swap), new SwapActionGenerator() },
+                { typeof(Replace), new ReplaceActionGenerator() },
+                { typeof(Rotate), new RotateActionGenerator() },
+                { typeof(ChangeDirection), new ChangeDirectionActionGenerator() },
+                { typeof(Instruction), new InstructionActionGenerator() },
+                { typeof(Draw), new DrawActionGenerator() },
+                { typeof(Discard), new DiscardActionGenerator() },
+                { typeof(PlaceFromHand), new PlaceFromHandActionGenerator() }
+            };
 
             //Setup Instruction validator
             InstructionValidator.game = Game;

@@ -48,10 +48,10 @@ public class UIEvents : MonoBehaviour, IListener
         if (isTraining)
         {
             Debug.Log("Training mode");
-            Academy.Instance.AutomaticSteppingEnabled = false;
+            Academy.Instance.AutomaticSteppingEnabled = true;
             Academy.Instance.OnEnvironmentReset += ResetEnvironment;
             //Academy.Instance.EnvironmentStep();
-            ResetEnvironment();
+            //ResetEnvironment();
         }
         else
         {

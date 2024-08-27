@@ -60,6 +60,10 @@ public class EvoBotAgent : Agent
         Academy.Instance.AgentPreStep += (step) => Debug.Log($"Stepping {step}");
     }
 
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        Debug.Log("Heuristic");
+    }
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("Collecting observations");

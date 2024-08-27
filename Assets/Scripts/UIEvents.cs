@@ -1,11 +1,16 @@
+using Assets.Training;
 using Controller;
 using Model;
 using Model.Bots;
+using Model.Instructions;
 using Model.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
+using Unity.MLAgents;
+using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,11 +20,13 @@ public class UIEvents : MonoBehaviour, IListener
     Button button;
     ScrollView triggerList;
     DropdownField actionDropdown;
+    Label playerStats;
 
-    public GameObject evoBotPrefab;
+    public EvoBotAgent evoBot;
     private Controller.Controller Controller;
     EventCallback<ClickEvent> callback;
-    public bool training;
+    public bool isTraining;
+    private Lesson lesson;
 
 
 
@@ -29,6 +36,7 @@ public class UIEvents : MonoBehaviour, IListener
         triggerList = doc.rootVisualElement.Q<ScrollView>("TriggerList");
         button = doc.rootVisualElement.Q<Button>("Start");
         actionDropdown = doc.rootVisualElement.Q<DropdownField>("ActionDropdown");
+        playerStats = doc.rootVisualElement.Q<Label>("Info");
 
         callback = (ev) => Controller.StartGame();
         button.RegisterCallback(callback);
@@ -36,20 +44,97 @@ public class UIEvents : MonoBehaviour, IListener
         //Build game
         Controller = new(new List<IListener>() { this });
 
+
+        if (isTraining)
+        {
+            Debug.Log("Training mode");
+            Academy.Instance.AutomaticSteppingEnabled = false;
+            Academy.Instance.OnEnvironmentReset += ResetEnvironment;
+            //Academy.Instance.EnvironmentStep();
+            ResetEnvironment();
+        }
+        else
+        {
+            Debug.Log("Evaluation mode");
+            List<Player> playerList = new()
+            {
+                //Instantiate players
+                evoBot.InitializeBot(lesson.IsWolf, "Evo", 1),
+            };
+        }
+
+    }
+
+    private void ResetEnvironment()
+    {
+        Debug.Log($"Resetting Environment for episode {Academy.Instance.EpisodeCount}");
+        lesson = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("game_config", 0) switch
+        {
+            0 => TrainingConfigs.PlaceCard,
+            _ => TrainingConfigs.PlaceCard,
+        };
+
+        Debug.Log("Lesson: " + lesson.Name);
+
         List<Player> playerList = new()
         {
             //Instantiate players
-            new Player(false, "Random 1", 1)
+            evoBot.InitializeBot(lesson.IsWolf, "Evo", 1),
         };
 
-        //Add evobot
-        GameObject evo = Instantiate(evoBotPrefab);
-        EvoBotAgent evoAgent = evo.GetComponent<EvoBotAgent>();
-
-        //playerList.Add(evoAgent.InitializeBot(false, "Evo", 2));
+        for (int i = 2; i <= lesson.NumPlayers; i++)
+        {
+            playerList.Add(new RandomBot(!lesson.IsWolf && i == 4, $"Random {2}", i));
+        }
 
         Controller.SetPlayers(playerList);
         Controller.SetupGame();
+        ConfigureGame();
+        Controller.StartGame();
+        //Academy.Instance.EnvironmentStep();
+    }
+
+    public void ConfigureGame()
+    {
+        if (lesson.HandConfig == HandConfig.BlueprintOnly)
+        {
+            evoBot.bot.Hand.Cards.Where((card) => card is Blueprint);
+        }
+        switch (lesson.HandConfig)
+        {
+            case HandConfig.BlueprintOnly:
+                MoveCards(evoBot.bot.Hand.Cards, Controller.Game.Draw.Cards, (card) => card is Blueprint);
+                break;
+            case HandConfig.TransferOnly:
+                MoveCards(evoBot.bot.Hand.Cards, Controller.Game.Draw.Cards, (card) => card is Transfer);
+                break;
+            case HandConfig.InstructionOnly:
+                MoveCards(evoBot.bot.Hand.Cards, Controller.Game.Draw.Cards, (card) => card is Instruction);
+                break;
+        }
+    }
+
+    private void MoveCards(List<Card> source, List<Card> destination, Predicate<Card> match)
+    {
+        //Remove cards from hand that don't match the predicate
+        for (int i = source.Count - 1; i >= 0; i--)
+        {
+            if (!match(source[i]))
+            {
+                destination.Add(source[i]);
+                source.RemoveAt(i);
+            }
+        }
+
+        //refill hand with cards that match the predicate
+        List<Card> cards = destination.Where((card) => match(card)).ToList();
+        while (source.Count < 5)
+        {
+            Card card = cards[0];
+            cards.Remove(card);
+            destination.Remove(card);
+            source.Add(card);
+        }
     }
 
     public void AddToList(string message)
@@ -74,6 +159,7 @@ public class UIEvents : MonoBehaviour, IListener
         label.style.fontSize = 25;
         triggerList.hierarchy.Add(label);
 
+        evoBot.CheckTrigger(trigger);
         //Handle triggers
         switch (trigger.TriggerName)
         {
@@ -118,8 +204,23 @@ public class UIEvents : MonoBehaviour, IListener
                 break;
 
             case Constants.OnTurnComplete:
-                //AnsiConsole.MarkupLine("[green]Player's turn is complete[/]");
-                Controller.UpdateGame();
+                Debug.Log("[green]Player's turn is complete[/]");
+                if (isTraining)
+                {
+                    if (lesson.StoppingCondition(Controller.Game))
+                    {
+                        Debug.Log("Stopping condition met");
+                        evoBot.EndEpisode();
+                    }
+                    else
+                    {
+                        Controller.UpdateGame();
+                    } 
+                }
+                else
+                {
+                    Controller.UpdateGame();
+                }
                 break;
 
             case Constants.OnStateChange:
@@ -162,7 +263,7 @@ public class UIEvents : MonoBehaviour, IListener
 
             case Constants.OnGameCompleted:
                 Player winner = (Player)trigger.TriggerData[Constants.Player];
-                AddToList($"The winner is [green]{winner.Name}[/] with {winner.VP_Count} victory points!");
+                AddToList($"The winner is {winner.Name} with {winner.VP_Count} victory points!");
                 Controller.UpdateGame();
                 break;
 
@@ -177,11 +278,12 @@ public class UIEvents : MonoBehaviour, IListener
 
     private void DisplayPlayers(List<Player> players)
     {
-        string labelText = "";
+        string labelText = "Player Stats:";
         foreach (Player player in players)
         {
-            labelText += player.Name;
+            labelText += player.Name + ":\n VP: " + player.VP_Count + "\n Brick: " + player.BrickCount + "\n Wood: " + player.WoodCount + "\n Straw: " + player.StrawCount + "\n\n";
         }
+        playerStats.text = labelText;
     }
 
     private void CardPlaced(string player, GameGrid gameGrid)

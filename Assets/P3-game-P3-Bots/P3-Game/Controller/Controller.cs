@@ -11,7 +11,7 @@ namespace Controller
 {
     public class Controller
     {
-        private Game Game;
+        public Game Game;
         private List<Player> Players;
         private List<IListener> ViewListeners;
 

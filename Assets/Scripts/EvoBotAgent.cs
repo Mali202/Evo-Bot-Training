@@ -14,15 +14,10 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-public class EvoBotAgent : Agent, IListener
+public class EvoBotAgent : Agent
 {
-    EvoBot bot;
+    public EvoBot bot;
     private List<IAction> validActions;
-
-    public void Broadcast(Trigger trigger)
-    {
-        Debug.Log("started");
-    }
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
@@ -30,22 +25,44 @@ public class EvoBotAgent : Agent, IListener
         bot.RequestAction = (actions) =>
         {
             validActions = actions;
+            Debug.Log("Requesting decision with action count " + actions.Count);
             RequestDecision();
+            //Academy.Instance.EnvironmentStep();
         };
 
         Debug.Log("Evo Bot initialized");
         return bot;
     }
 
+    public void CheckTrigger(Trigger trigger)
+    {
+        switch (trigger.TriggerName)
+        {
+            case Constants.OnExecuteCard:
+                Placement placement = (Placement)trigger.TriggerData[Constants.Placement];
+                break;
+            case Constants.OnGoalCardsActivated:
+            case Constants.OnGameCompleted:
+                break;
+        }
+    }
+
     //Agent override methods
- 
+
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
     }
 
+    public override void Initialize()
+    {
+        Debug.Log("Evo Bot agent initialized");
+        Academy.Instance.AgentPreStep += (step) => Debug.Log($"Stepping {step}");
+    }
+
     public override void CollectObservations(VectorSensor sensor)
     {
+        Debug.Log("Collecting observations");
         Game game = bot.Game;
 
         // player number: 1
@@ -71,6 +88,34 @@ public class EvoBotAgent : Agent, IListener
 
         // cards in hand: 5
         sensor.AddObservation(EncodeDeck(bot.Hand.Cards, 5).Select(x => (float)x).ToArray());
+
+        //TODO: Goal card observation
+    }
+
+    public override void OnActionReceived(ActionBuffers actions)
+    {
+        Debug.Log("OnActionReceived called");
+        ActionSegment<int> discreteActions = actions.DiscreteActions;
+
+        int actionType = discreteActions[0];
+        switch (actionType)
+        {
+            //place from hand
+            case 0:
+                HandlePlaceFromHand(discreteActions);
+                break;
+
+            //draw
+            case 1:
+                HandleDraw(discreteActions);
+                break;
+
+            //discard
+            case 2:
+                HandleDiscard(discreteActions);
+                break;
+        }
+        //Academy.Instance.EnvironmentStep();
     }
 
     // encode grid
@@ -182,30 +227,6 @@ public class EvoBotAgent : Agent, IListener
         };
     }
 
-    public override void OnActionReceived(ActionBuffers actions)
-    {
-        ActionSegment<int> discreteActions = actions.DiscreteActions;
-
-        int actionType = discreteActions[0];
-        switch (actionType)
-        {
-            //place from hand
-            case 0:
-                HandlePlaceFromHand(discreteActions);
-                break;
-
-            //draw
-            case 1:
-                HandleDraw(discreteActions);
-                break;
-
-            //discard
-            case 2:
-                HandleDiscard(discreteActions);
-                break;
-        }
-    }
-
     private void HandlePlaceFromHand(ActionSegment<int> discreteActions)
     {
         int cardIndex = discreteActions[1];
@@ -226,10 +247,12 @@ public class EvoBotAgent : Agent, IListener
 
                 if (action != null)
                 {
+                    RewardForPlacement(action);
                     bot.ExecuteAction(action);
                 }
                 else
                 {
+                    Debug.Log("Action is null");
                     AddReward(-1.0f);
                 }
                 break;
@@ -251,6 +274,7 @@ public class EvoBotAgent : Agent, IListener
                 }
                 else
                 {
+                    Debug.Log("Action is null");
                     AddReward(-1.0f);
                 }                
                 break;
@@ -285,6 +309,7 @@ public class EvoBotAgent : Agent, IListener
         }
         else
         {
+            Debug.Log("Action is null");
             AddReward(-1.0f);
         }
     }
@@ -305,6 +330,7 @@ public class EvoBotAgent : Agent, IListener
         }
         else
         {
+            Debug.Log("Action is null");
             AddReward(-1.0f);
         }
     }
@@ -319,5 +345,37 @@ public class EvoBotAgent : Agent, IListener
             3 => Orientation.Left,
             _ => Orientation.Up, // Default to Up if something goes wrong
         };
+    }
+
+    private void RewardForPlacement(IAction action)
+    {
+        if (action is PlaceInstruction placeInstruction)
+        {
+            int starting = 0;
+            switch (placeInstruction.placement.Instruction)
+            {
+                case Transfer tr:
+                    starting = tr.ToPlayer;
+                    break;
+
+                case Blueprint bl:
+                    starting = bl.Player;
+                    break;
+            }
+
+            if (placeInstruction.placement.Instruction is Transfer or Blueprint)
+            {
+                if (bot.Game.CalculatePlayer(starting, placeInstruction.placement.Orientation) == bot)
+                {
+                    Debug.Log("Rewarding for correct placement");
+                    AddReward(0.5f);
+                } else 
+                {
+                    Debug.Log("Punishing for incorrect placement");
+                    AddReward(-0.5f);
+                }            
+            }
+            
+        }
     }
 }

@@ -66,8 +66,8 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 0300000003000000
-    VectorActionSize: 0300000003000000
+      BranchSizes: 0300000005000000070000000300000004000000
+    VectorActionSize: 0300000005000000070000000300000004000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -76,6 +76,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: EvoPlayer
   TeamId: 0
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0

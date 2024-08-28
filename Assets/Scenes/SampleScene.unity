@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evo Bot Agent
       objectReference: {fileID: 0}
+    - target: {fileID: 1085118877594724414, guid: d867df0d382214c4a9d4e1e25a3bc5ae, type: 3}
+      propertyPath: MaxStep
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3065548761773242384, guid: d867df0d382214c4a9d4e1e25a3bc5ae, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

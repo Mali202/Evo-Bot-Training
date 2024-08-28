@@ -18,6 +18,7 @@ public class EvoBotAgent : Agent
 {
     public EvoBot bot;
     private List<IAction> validActions;
+    public event System.Action OnEnvironmentReset;
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
@@ -27,7 +28,6 @@ public class EvoBotAgent : Agent
             validActions = actions;
             Debug.Log("Requesting decision with action count " + actions.Count);
             RequestDecision();
-            //Academy.Instance.EnvironmentStep();
         };
 
         Debug.Log("Evo Bot initialized");
@@ -52,6 +52,7 @@ public class EvoBotAgent : Agent
     public override void OnEpisodeBegin()
     {
         Debug.Log("OnEpisodeBegin called");
+        OnEnvironmentReset.Invoke();
     }
 
     public override void Initialize()

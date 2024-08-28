@@ -41,6 +41,7 @@ public class UIEvents : MonoBehaviour, IListener
         callback = (ev) => Controller.StartGame();
         button.RegisterCallback(callback);
         
+
         //Build game
         Controller = new(new List<IListener>() { this });
 
@@ -48,8 +49,8 @@ public class UIEvents : MonoBehaviour, IListener
         if (isTraining)
         {
             Debug.Log("Training mode");
-            Academy.Instance.AutomaticSteppingEnabled = true;
-            Academy.Instance.OnEnvironmentReset += ResetEnvironment;
+            Academy.Instance.AutomaticSteppingEnabled = false;
+            evoBot.OnEnvironmentReset += ResetEnvironment;
             //Academy.Instance.EnvironmentStep();
             //ResetEnvironment();
         }
@@ -63,6 +64,14 @@ public class UIEvents : MonoBehaviour, IListener
             };
         }
 
+    }
+
+    private void Start()
+    {
+        if (isTraining)
+        {
+            Academy.Instance.EnvironmentStep();
+        }
     }
 
     private void ResetEnvironment()

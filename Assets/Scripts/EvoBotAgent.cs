@@ -19,6 +19,7 @@ public class EvoBotAgent : Agent
     public EvoBot bot;
     private List<IAction> validActions;
     public event System.Action OnEnvironmentReset;
+    public event System.Action OnStartGame;
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
@@ -53,6 +54,7 @@ public class EvoBotAgent : Agent
     {
         Debug.Log("OnEpisodeBegin called");
         OnEnvironmentReset.Invoke();
+        OnStartGame.Invoke();
     }
 
     public override void Initialize()

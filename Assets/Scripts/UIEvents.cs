@@ -39,24 +39,21 @@ public class UIEvents : MonoBehaviour, IListener
         playerStats = doc.rootVisualElement.Q<Label>("Info");
 
         callback = (ev) => Controller.StartGame();
-        button.RegisterCallback(callback);
-        
-
-        //Build game
-        Controller = new(new List<IListener>() { this });
-
+        button.RegisterCallback(callback);        
 
         if (isTraining)
         {
             Debug.Log("Training mode");
             Academy.Instance.AutomaticSteppingEnabled = false;
             evoBot.OnEnvironmentReset += ResetEnvironment;
+            evoBot.OnStartGame += StartGame;
             //Academy.Instance.EnvironmentStep();
             //ResetEnvironment();
         }
         else
         {
             Debug.Log("Evaluation mode");
+            Controller = new(new List<IListener>() { this });
             List<Player> playerList = new()
             {
                 //Instantiate players
@@ -77,6 +74,10 @@ public class UIEvents : MonoBehaviour, IListener
     private void ResetEnvironment()
     {
         Debug.Log($"Resetting Environment for episode {Academy.Instance.EpisodeCount}");
+
+        //Build game
+        Controller = new(new List<IListener>() { this });
+
         lesson = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("game_config", 0) switch
         {
             0 => TrainingConfigs.PlaceCard,
@@ -99,7 +100,7 @@ public class UIEvents : MonoBehaviour, IListener
         Controller.SetPlayers(playerList);
         Controller.SetupGame();
         ConfigureGame();
-        Controller.StartGame();
+        //Controller.StartGame();
         //Academy.Instance.EnvironmentStep();
     }
 
@@ -283,6 +284,11 @@ public class UIEvents : MonoBehaviour, IListener
                 Controller.UpdateGame();
                 break;
         }
+    }
+
+    private void StartGame()
+    {
+        Controller.StartGame();
     }
 
     private void DisplayPlayers(List<Player> players)

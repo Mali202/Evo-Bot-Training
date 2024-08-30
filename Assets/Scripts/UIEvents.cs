@@ -28,7 +28,7 @@ public class UIEvents : MonoBehaviour, IListener
     public bool isTraining;
     private Lesson lesson;
 
-
+    private bool stop = false;
 
     private void Awake()
     {
@@ -46,7 +46,7 @@ public class UIEvents : MonoBehaviour, IListener
             Debug.Log("Training mode");
             Academy.Instance.AutomaticSteppingEnabled = false;
             evoBot.OnEnvironmentReset += ResetEnvironment;
-            evoBot.OnStartGame += StartGame;
+            evoBot.OnStartGame += TrainingLoop;
             //Academy.Instance.EnvironmentStep();
             //ResetEnvironment();
         }
@@ -67,8 +67,19 @@ public class UIEvents : MonoBehaviour, IListener
     {
         if (isTraining)
         {
-            Academy.Instance.EnvironmentStep();
+            TrainingGame();
+            evoBot.EndEpisode();
         }
+    }
+
+    private void TrainingGame()
+    {
+        while (!stop)
+        {
+            Academy.Instance.EnvironmentStep();
+            Debug.Log("Environment step");
+        }
+        evoBot.EndEpisode();
     }
 
     private void ResetEnvironment()
@@ -220,7 +231,8 @@ public class UIEvents : MonoBehaviour, IListener
                     if (lesson.StoppingCondition(Controller.Game))
                     {
                         Debug.Log("Stopping condition met");
-                        evoBot.EndEpisode();
+                        stop = true;
+                        //evoBot.EndEpisode();
                     }
                     else
                     {

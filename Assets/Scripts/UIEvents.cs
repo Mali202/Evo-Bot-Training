@@ -45,7 +45,6 @@ public class UIEvents : MonoBehaviour, IListener
         {
             Debug.Log("Training mode");
             Academy.Instance.AutomaticSteppingEnabled = false;
-            evoBot.OnEnvironmentReset += ResetEnvironment;
             evoBot.OnStartGame += TrainingLoop;
             //Academy.Instance.EnvironmentStep();
             //ResetEnvironment();
@@ -66,25 +65,41 @@ public class UIEvents : MonoBehaviour, IListener
     private void Start()
     {
         if (isTraining)
-        {
-            TrainingGame();
-            evoBot.EndEpisode();
+        {        
+            StartCoroutine(StartTraining());
         }
+    }
+
+    IEnumerator StartTraining()
+    {
+        while (evoBot.CompletedEpisodes <= evoBot.MaxEpisodes)
+        {
+            TrainingLoop();
+            yield return null;
+        }
+        Debug.Log("Training complete");
+    }
+
+    private void TrainingLoop()
+    {
+        ResetEnvironment();
+        StartGame();
     }
 
     private void TrainingGame()
     {
-        while (!stop)
-        {
-            Academy.Instance.EnvironmentStep();
-            Debug.Log("Environment step");
-        }
+        StartGame();
+        //evoBot.EndEpisode();
+    }
+
+    private void EndGame()
+    {
         evoBot.EndEpisode();
     }
 
     private void ResetEnvironment()
     {
-        Debug.Log($"Resetting Environment for episode {Academy.Instance.EpisodeCount}");
+        Debug.Log($"Resetting Environment for episode {evoBot.CompletedEpisodes}");
 
         //Build game
         Controller = new(new List<IListener>() { this });
@@ -192,6 +207,7 @@ public class UIEvents : MonoBehaviour, IListener
                 //DisplayGrid((GameGrid)trigger.TriggerData[Constants.CurrentGrid]);
                 //Temp
                 DisplayPlayers((List<Player>)trigger.TriggerData[Constants.Players]);
+                Debug.Log("Game has started");
                 Controller.UpdateGame();
                 break;
 
@@ -232,7 +248,7 @@ public class UIEvents : MonoBehaviour, IListener
                     {
                         Debug.Log("Stopping condition met");
                         stop = true;
-                        //evoBot.EndEpisode();
+                        EndGame();
                     }
                     else
                     {

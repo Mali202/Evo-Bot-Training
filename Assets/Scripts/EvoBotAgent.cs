@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Unity.Editor.Tasks.Extensions;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -17,9 +18,11 @@ using UnityEngine;
 public class EvoBotAgent : Agent
 {
     public EvoBot bot;
+    public int MaxEpisodes = 500;
     private List<IAction> validActions;
-    public event System.Action OnEnvironmentReset;
     public event System.Action OnStartGame;
+    public IAction result;
+    private bool started = false;
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
@@ -28,7 +31,19 @@ public class EvoBotAgent : Agent
         {
             validActions = actions;
             Debug.Log("Requesting decision with action count " + actions.Count);
-            RequestDecision();
+            Academy.Instance.EnvironmentStep();
+            Debug.Log("Action Executed");       
+            if (result != null)
+            {
+                Debug.Log("Action: " + result.GetDescription());
+                IAction temp = result;
+                result = null;
+                bot.ExecuteAction(temp);
+            }
+            else
+            {
+                EndEpisode();
+            }
         };
 
         Debug.Log("Evo Bot initialized");
@@ -53,14 +68,21 @@ public class EvoBotAgent : Agent
     public override void OnEpisodeBegin()
     {
         Debug.Log("OnEpisodeBegin called");
-        OnEnvironmentReset.Invoke();
-        OnStartGame.Invoke();
+        //if (!started)
+        //{
+        //    OnStartGame?.Invoke();
+        //    started = true;
+        //}
     }
 
     public override void Initialize()
     {
         Debug.Log("Evo Bot agent initialized");
-        Academy.Instance.AgentPreStep += (step) => Debug.Log($"Stepping {step}");
+        Academy.Instance.AgentPreStep += (step) =>
+        {
+            Debug.Log($"Stepping {step}");
+            RequestDecision();
+        };
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -102,6 +124,7 @@ public class EvoBotAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         Debug.Log("OnActionReceived called");
+        Debug.Log("Action array: " + actions.DiscreteActions.ToArray().Join());
         ActionSegment<int> discreteActions = actions.DiscreteActions;
 
         int actionType = discreteActions[0];
@@ -237,6 +260,13 @@ public class EvoBotAgent : Agent
     private void HandlePlaceFromHand(ActionSegment<int> discreteActions)
     {
         int cardIndex = discreteActions[1];
+        if (cardIndex > (bot.Hand.Cards.Count - 1))
+        {
+            Debug.Log("Card index out of range");
+            AddReward(-1.0f);
+            return;
+        }
+
         Card card = bot.Hand.Cards[cardIndex];
         IAction action;
         switch (card)
@@ -255,7 +285,7 @@ public class EvoBotAgent : Agent
                 if (action != null)
                 {
                     RewardForPlacement(action);
-                    bot.ExecuteAction(action);
+                    result = action;
                 }
                 else
                 {
@@ -265,7 +295,7 @@ public class EvoBotAgent : Agent
                 break;
 
             case ChangeDirection:
-                bot.ExecuteAction(validActions.First((action) => action is PlayChangeDirection));
+                result = validActions.First((action) => action is PlayChangeDirection);
                 break;
 
             case Skip:
@@ -277,7 +307,7 @@ public class EvoBotAgent : Agent
 
                 if (action != null)
                 {
-                    bot.ExecuteAction(action);
+                    result = action;
                 }
                 else
                 {
@@ -312,7 +342,8 @@ public class EvoBotAgent : Agent
 
         if (action != null)
         {
-            bot.ExecuteAction(action);
+            AddReward(0.1f);
+            result = action;
         }
         else
         {
@@ -333,7 +364,8 @@ public class EvoBotAgent : Agent
                 .Select((action) => (DiscardAction)action)
                 .FirstOrDefault((action) => action.cardToDiscard == card);
 
-            bot.ExecuteAction(action);
+            AddReward(0.1f);
+            result = action;
         }
         else
         {

@@ -10,12 +10,36 @@ namespace Assets.Training
 {
     public static class TrainingConfigs
     {
-        public static readonly Lesson PlaceCard = new()
+        public static readonly Lesson PlaceBlueprint = new()
         {
-            Name = "PlaceCard",
-            NumPlayers = 1,
+            Name = "Place Blueprint",
+            NumPlayers = 2,
+            HandConfig = HandConfig.BlueprintOnly,
+            StoppingCondition = (game) => game.GameGrid.Placements.Count == 4
+        };
+
+        public static readonly Lesson PlaceTransfer = new()
+        {
+            Name = "Place Transfer",
+            NumPlayers = 2,
+            HandConfig = HandConfig.TransferOnly,
+            StoppingCondition = (game) => game.GameGrid.Placements.Count == 4
+        };
+
+        public static readonly Lesson PlaceInstruction = new()
+        {
+            Name = "Place Instruction",
+            NumPlayers = 2,
             HandConfig = HandConfig.InstructionOnly,
-            StoppingCondition = (game) => game.GameGrid.Placements.Count == 1
+            StoppingCondition = (game) => game.GameGrid.Placements.Count == 4
+        };
+
+        public static readonly Lesson TwoPlayerGame = new()
+        {
+            Name = "Two Player game",
+            NumPlayers = 2,
+            HandConfig = HandConfig.All,
+            StoppingCondition = (game) => false
         };
     }
 

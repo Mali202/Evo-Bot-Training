@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -94,7 +95,7 @@ public class UIEvents : MonoBehaviour, IListener
 
     private void EndGame()
     {
-        evoBot.EndEpisode();
+        evoBot.EpisodeInterrupted();
     }
 
     private void ResetEnvironment()
@@ -106,8 +107,11 @@ public class UIEvents : MonoBehaviour, IListener
 
         lesson = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("game_config", 0) switch
         {
-            0 => TrainingConfigs.PlaceCard,
-            _ => TrainingConfigs.PlaceCard,
+            0 => TrainingConfigs.PlaceBlueprint,
+            1 => TrainingConfigs.PlaceTransfer,
+            2 => TrainingConfigs.PlaceInstruction,
+            3 => TrainingConfigs.TwoPlayerGame,
+            _ => TrainingConfigs.TwoPlayerGame,
         };
 
         Debug.Log("Lesson: " + lesson.Name);
@@ -120,22 +124,16 @@ public class UIEvents : MonoBehaviour, IListener
 
         for (int i = 2; i <= lesson.NumPlayers; i++)
         {
-            playerList.Add(new RandomBot(!lesson.IsWolf && i == 4, $"Random {2}", i));
+            playerList.Add(new RandomBot(!lesson.IsWolf && i == 4, $"Random {i}", i));
         }
 
         Controller.SetPlayers(playerList);
         Controller.SetupGame();
         ConfigureGame();
-        //Controller.StartGame();
-        //Academy.Instance.EnvironmentStep();
     }
 
     public void ConfigureGame()
     {
-        if (lesson.HandConfig == HandConfig.BlueprintOnly)
-        {
-            evoBot.bot.Hand.Cards.Where((card) => card is Blueprint);
-        }
         switch (lesson.HandConfig)
         {
             case HandConfig.BlueprintOnly:
@@ -237,6 +235,8 @@ public class UIEvents : MonoBehaviour, IListener
                 break;
 
             case Constants.OnReceivedPlayerInput:
+                string playerName = (string)trigger.TriggerData[Constants.Player];
+                Debug.Log($"Received input from {playerName}");
                 Controller.UpdateGame();
                 break;
 

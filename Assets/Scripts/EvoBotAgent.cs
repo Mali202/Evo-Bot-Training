@@ -9,10 +9,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Unity.Editor.Tasks.Extensions;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EvoBotAgent : Agent
@@ -22,7 +22,7 @@ public class EvoBotAgent : Agent
     private List<IAction> validActions;
     public event System.Action OnStartGame;
     public IAction result;
-    private bool started = false;
+    StatsRecorder statsRecorder;
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
@@ -56,9 +56,25 @@ public class EvoBotAgent : Agent
         {
             case Constants.OnExecuteCard:
                 Placement placement = (Placement)trigger.TriggerData[Constants.Placement];
+                if (placement.Instruction is Transfer tr)
+                {
+                    int starting = tr.FromPlayer;
+                    if (bot.Game.CalculatePlayer(starting, placement.Orientation) == bot)
+                    {
+                        Debug.Log("Punishing for resources transferred");
+                        AddReward(-0.3f);
+                    }
+                }
                 break;
             case Constants.OnGoalCardsActivated:
             case Constants.OnGameCompleted:
+                Player winner = (Player)trigger.TriggerData[Constants.Player];
+                if (winner == bot)
+                {
+                    Debug.Log("Reward for winning game");
+                    statsRecorder.Add("Win", 1.0f, StatAggregationMethod.Sum);
+                    AddReward(1.0f);
+                }
                 break;
         }
     }
@@ -78,6 +94,7 @@ public class EvoBotAgent : Agent
     public override void Initialize()
     {
         Debug.Log("Evo Bot agent initialized");
+        statsRecorder = Academy.Instance.StatsRecorder;
         Academy.Instance.AgentPreStep += (step) =>
         {
             Debug.Log($"Stepping {step}");
@@ -124,7 +141,7 @@ public class EvoBotAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         Debug.Log("OnActionReceived called");
-        Debug.Log("Action array: " + actions.DiscreteActions.ToArray().Join());
+        Debug.Log("Action array: " + string.Join(", ", actions.DiscreteActions.ToArray()));
         ActionSegment<int> discreteActions = actions.DiscreteActions;
 
         int actionType = discreteActions[0];
@@ -290,12 +307,18 @@ public class EvoBotAgent : Agent
                 else
                 {
                     Debug.Log("Action is null");
-                    AddReward(-1.0f);
+                    action = validActions
+                        .Where((action) => action is PlaceInstruction)
+                        .Select((action) => (PlaceInstruction)action)
+                        .FirstOrDefault((action) => action.placement.Orientation == orientation);
+                    RewardForPlacement(action);
+                    AddReward(-0.5f);
                 }
                 break;
 
             case ChangeDirection:
                 result = validActions.First((action) => action is PlayChangeDirection);
+                AddReward(0.1f);
                 break;
 
             case Skip:
@@ -308,6 +331,7 @@ public class EvoBotAgent : Agent
                 if (action != null)
                 {
                     result = action;
+                    AddReward(0.5f);
                 }
                 else
                 {

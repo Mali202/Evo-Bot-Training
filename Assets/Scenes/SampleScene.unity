@@ -140,7 +140,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1085118877594724414, guid: d867df0d382214c4a9d4e1e25a3bc5ae, type: 3}
       propertyPath: MaxEpisodes
-      value: 50000
+      value: 200000
       objectReference: {fileID: 0}
     - target: {fileID: 3065548761773242384, guid: d867df0d382214c4a9d4e1e25a3bc5ae, type: 3}
       propertyPath: m_LocalPosition.x

@@ -312,13 +312,13 @@ public class EvoBotAgent : Agent
                         .Select((action) => (PlaceInstruction)action)
                         .FirstOrDefault((action) => action.placement.Orientation == orientation);
                     RewardForPlacement(action);
-                    AddReward(-0.5f);
+                    AddReward(-0.2f);
                 }
                 break;
 
             case ChangeDirection:
                 result = validActions.First((action) => action is PlayChangeDirection);
-                AddReward(0.1f);
+                AddReward(0.4f);
                 break;
 
             case Skip:
@@ -435,7 +435,7 @@ public class EvoBotAgent : Agent
                 } else 
                 {
                     Debug.Log("Punishing for incorrect placement");
-                    AddReward(-0.5f);
+                    AddReward(-0.3f);
                 }            
             }
             

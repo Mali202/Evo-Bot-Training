@@ -585,7 +585,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: -0.02276516, y: 2.5390038, z: -1.4058361}
     speed: 2
-    m_Value: {x: 0.46682167, y: 0.1540966, z: -0.5520239}
+    m_Value: {x: -0.02276516, y: 2.5390038, z: -1.4058361}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -633,7 +633,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.056199104, y: 0.9222692, z: -0.14676338, w: -0.35315856}
     speed: 2
-    m_Value: {x: -0.08114164, y: 0.90816253, z: -0.20815204, w: -0.35401922}
+    m_Value: {x: -0.056199122, y: 0.9222696, z: -0.14676344, w: -0.35315868}
   m_Size:
     m_Target: 9.530661
     speed: 2
@@ -799,7 +799,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 12f8ffff52f8ffffbef9ffff1cfbffff
+      m_ExpandedIDs: e0f6ffff20f7ffff8cf8ffff1cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -2436,13 +2436,13 @@ MonoBehaviour:
       workTreeStatus: 3
     changedFilesText: 15 changed files
     lastCurrentBranchChangedEvent:
-      updatedTimeString: 2024-09-10T17:35:21.864+02:00
+      updatedTimeString: 2024-09-13T15:01:56.816+02:00
       cacheType: 1
     lastStatusEntriesChangedEvent:
-      updatedTimeString: 2024-09-10T17:46:22.998+02:00
+      updatedTimeString: 2024-09-13T15:11:23.715+02:00
       cacheType: 6
     lastLocksChangedEvent:
-      updatedTimeString: 2024-09-10T17:35:23.444+02:00
+      updatedTimeString: 2024-09-13T14:51:20.456+02:00
       cacheType: 7
   historyView:
     currentLogHasUpdate: 0

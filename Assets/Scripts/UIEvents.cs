@@ -269,11 +269,7 @@ public class UIEvents : MonoBehaviour, IListener
                 Placement placement = (Placement)trigger.TriggerData[Constants.Placement];
                 Debug.Log($"Executing card '{placement.Instruction.Name}' at (Row: {placement.Row}, Column {placement.Col})");
                 button.text = "Execute card";
-                void newCallback(ClickEvent ev)
-                {
-                    Controller.UpdateGame();
-                }
-                RegisterCallback(newCallback);
+                Controller.UpdateGame();
                 break;
 
             case Constants.OnGridExecuted:
@@ -302,6 +298,7 @@ public class UIEvents : MonoBehaviour, IListener
             case Constants.OnGameCompleted:
                 Player winner = (Player)trigger.TriggerData[Constants.Player];
                 AddToList($"The winner is {winner.Name} with {winner.VP_Count} victory points!");
+                Debug.Log($"The winner is {winner.Name} with {winner.VP_Count} victory points!");
                 Controller.UpdateGame();
                 break;
 

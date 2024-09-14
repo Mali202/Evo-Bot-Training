@@ -42,6 +42,8 @@ public class EvoBotAgent : Agent
             }
             else
             {
+                Debug.Log("No action to execute");
+                bot.ExecuteAction(validActions.First());
                 EndEpisode();
             }
         };

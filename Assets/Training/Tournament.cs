@@ -19,6 +19,7 @@ namespace Assets.Training
         public Tournament(EvoBotAgent evoBot)
         {
             this.evoBot = evoBot;
+
         }
 
         public void Broadcast(Trigger trigger)

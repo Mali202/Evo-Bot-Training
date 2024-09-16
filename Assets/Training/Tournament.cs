@@ -3,6 +3,7 @@ using Model.Bots;
 using Model.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,10 +16,46 @@ namespace Assets.Training
     {
         public EvoBotAgent evoBot;
         private Controller.Controller Controller;
+        public Dictionary<string, List<string>> winners;
+        public string gameType;
 
         public Tournament(EvoBotAgent evoBot)
         {
             this.evoBot = evoBot;
+            winners = new Dictionary<string, List<string>>();
+        }
+
+        public void RunGame(List<Player> playerList) {
+            Controller = new(new List<IListener>() { this });
+            gameType = playerList.Count switch
+            {
+                2 => "2P",
+                3 => "3P",
+                4 => "4P",
+                _ => "Unknown"
+            };
+            Controller.SetPlayers(playerList);
+            Controller.SetupGame();
+            Controller.StartGame();
+        }
+
+        public void SaveStats()
+        {
+            StringBuilder sb = new();
+            string path = "Assets/Resources/stats.txt";
+            StreamWriter writer = new StreamWriter(path, true);
+            
+            foreach (var (key, value) in winners)
+            {
+                sb.AppendLine($"Game Type: {key}");
+                foreach (var winner in value)
+                {
+                    sb.AppendLine($"Winner: {winner}");
+                }
+            }
+            writer.Write(sb.ToString());
+            writer.Close();
+            Debug.Log(sb.ToString());
         }
 
         public void Broadcast(Trigger trigger)
@@ -111,6 +148,14 @@ namespace Assets.Training
                     Player winner = (Player)trigger.TriggerData[Constants.Player];
                     //AddToList($"The winner is {winner.Name} with {winner.VP_Count} victory points!");
                     Debug.Log($"The winner is {winner.Name} with {winner.VP_Count} victory points!");
+                    if (winners.ContainsKey(gameType))
+                    {
+                        winners[gameType].Add(winner.Name);
+                    }
+                    else
+                    {
+                        winners.Add(gameType, new List<string> { winner.Name });
+                    }
                     Controller.UpdateGame();
                     break;
 

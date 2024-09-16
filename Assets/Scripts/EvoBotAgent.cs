@@ -23,10 +23,17 @@ public class EvoBotAgent : Agent
     public event System.Action OnStartGame;
     public IAction result;
     StatsRecorder statsRecorder;
+    private WeightedActionExecutor executor;
 
     public EvoBot InitializeBot(bool isWolf, string Name, int playerNumber)
     {
         bot = new EvoBot(isWolf, Name, playerNumber);
+        executor = new WeightedActionExecutor(new WeightedActionParam[] {
+            new((action) => action is PlaceInstruction, 30),
+            new((action) => action is DrawAction, 15),
+            new((action) => action is DiscardAction, 15),
+            new((action) => action is (PlaySkip or PlayChangeDirection or RotateAction), 40)
+        });
         bot.RequestAction = (actions) =>
         {
             validActions = actions;
@@ -43,7 +50,9 @@ public class EvoBotAgent : Agent
             else
             {
                 Debug.Log("No action to execute");
-                bot.ExecuteAction(validActions.First());
+                IAction action = executor.Execute(validActions);
+                Debug.Log("Action: " + action.GetDescription());
+                bot.ExecuteAction(action);
                 EndEpisode();
             }
         };

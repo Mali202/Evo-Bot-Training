@@ -77,7 +77,6 @@ public class EvoBotAgent : Agent
                     }
                 }
                 break;
-            case Constants.OnGoalCardsActivated:
             case Constants.OnGameCompleted:
                 Player winner = (Player)trigger.TriggerData[Constants.Player];
                 if (winner == bot)

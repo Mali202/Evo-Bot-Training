@@ -13,9 +13,10 @@ namespace Assets.Scripts
     {
         Tournament tournament;
         public EvoBotAgent evoBotAgent;
+        public int gamesToPlay;
         int gamesPlayed;
         int configIndex;
-        string[] configs = {
+        readonly string[] configs = {
             // Two-player combinations
             "R, P",
             "R, C",
@@ -53,6 +54,19 @@ namespace Assets.Scripts
                 _ => throw new NotImplementedException()
             };
             tournament.RunGame(playerList);
+            gamesPlayed++;
+            if (gamesPlayed == gamesToPlay)
+            {
+                gamesPlayed = 0;
+                configIndex++;
+            }
+
+            if (configIndex == configs.Length)
+            {
+                tournament.SaveStats();
+                Debug.Log("Tournament complete");
+                enabled = false;
+            }
         }
 
         // get two players

@@ -13,7 +13,7 @@ using UnityEngine.UIElements;
 namespace Assets.Training
 {
     public class Tournament : IListener
-    {;
+    {
         private Controller.Controller Controller;
         public Dictionary<string, List<string>> winners;
         public string gameType;

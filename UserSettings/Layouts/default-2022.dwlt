@@ -799,7 +799,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: f8f6ffff38f7ffffa4f8ffff1cfbffff
+      m_ExpandedIDs: 8cf7ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -2436,13 +2436,13 @@ MonoBehaviour:
       workTreeStatus: 3
     changedFilesText: 15 changed files
     lastCurrentBranchChangedEvent:
-      updatedTimeString: 2024-09-14T22:48:02.035+02:00
+      updatedTimeString: 2024-09-17T13:29:20.851+02:00
       cacheType: 1
     lastStatusEntriesChangedEvent:
-      updatedTimeString: 2024-09-14T22:57:11.727+02:00
+      updatedTimeString: 2024-09-17T13:47:41.210+02:00
       cacheType: 6
     lastLocksChangedEvent:
-      updatedTimeString: 2024-09-14T22:48:03.633+02:00
+      updatedTimeString: 2024-09-17T13:29:22.514+02:00
       cacheType: 7
   historyView:
     currentLogHasUpdate: 0

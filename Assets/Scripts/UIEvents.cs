@@ -30,6 +30,7 @@ public class UIEvents : MonoBehaviour, IListener
     private Lesson lesson;
 
     private bool stop = false;
+    private int updates;
 
     private void Awake()
     {
@@ -189,11 +190,20 @@ public class UIEvents : MonoBehaviour, IListener
     //Game manager
     public void Broadcast(Trigger trigger)
     {
-        Label label = new Label(trigger.TriggerName);
-        label.style.fontSize = 25;
-        triggerList.hierarchy.Add(label);
+        if (!isTraining)
+        {
+            Label label = new Label(trigger.TriggerName);
+            label.style.fontSize = 25;
+            triggerList.hierarchy.Add(label); 
+        }
 
         evoBot.CheckTrigger(trigger);
+        updates++;
+        if (updates > 1000)
+        {
+            Debug.Log("Too many updates, stopping");
+            return;
+        }
         //Handle triggers
         switch (trigger.TriggerName)
         {
@@ -313,7 +323,15 @@ public class UIEvents : MonoBehaviour, IListener
 
     private void StartGame()
     {
-        Controller.StartGame();
+        updates = 0;
+        try
+        {
+            Controller.StartGame();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("exception: " + e.Message);
+        }
     }
 
     private void DisplayPlayers(List<Player> players)

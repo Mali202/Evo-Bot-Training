@@ -13,15 +13,13 @@ using UnityEngine.UIElements;
 namespace Assets.Training
 {
     public class Tournament : IListener
-    {
-        public EvoBotAgent evoBot;
+    {;
         private Controller.Controller Controller;
         public Dictionary<string, List<string>> winners;
         public string gameType;
 
-        public Tournament(EvoBotAgent evoBot)
+        public Tournament()
         {
-            this.evoBot = evoBot;
             winners = new Dictionary<string, List<string>>();
         }
 
@@ -29,11 +27,12 @@ namespace Assets.Training
             Controller = new(new List<IListener>() { this });
             gameType = playerList.Count switch
             {
-                2 => "2P",
-                3 => "3P",
-                4 => "4P",
+                2 => "2P-",
+                3 => "3P-",
+                4 => "4P-",
                 _ => "Unknown"
             };
+            gameType += string.Join(", ", playerList.Select(p => p.Name));
             Controller.SetPlayers(playerList);
             Controller.SetupGame();
             Controller.StartGame();

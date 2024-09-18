@@ -199,7 +199,7 @@ public class UIEvents : MonoBehaviour, IListener
 
         evoBot.CheckTrigger(trigger);
         updates++;
-        if (updates > 1000)
+        if (updates > 750)
         {
             Debug.Log("Too many updates, stopping");
             return;

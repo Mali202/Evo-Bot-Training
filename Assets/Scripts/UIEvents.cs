@@ -199,7 +199,7 @@ public class UIEvents : MonoBehaviour, IListener
 
         evoBot.CheckTrigger(trigger);
         updates++;
-        if (updates > 750)
+        if (updates > 420)
         {
             Debug.Log("Too many updates, stopping");
             return;
@@ -330,7 +330,7 @@ public class UIEvents : MonoBehaviour, IListener
         }
         catch (Exception e)
         {
-            Debug.Log("exception: " + e.Message);
+            Debug.Log("exception: " + e.Message + ", " + updates);
         }
     }
 

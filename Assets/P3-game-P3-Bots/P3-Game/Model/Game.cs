@@ -254,7 +254,7 @@ namespace Model
             //get input from view
             Console.WriteLine("Received input from player: " + CurPlayer.Name);
             curAction = action;
-            AddToTriggerQueue(Constants.OnReceivedPlayerInput, new KeyValuePair<string, object>(Constants.Player, CurPlayer.Name));
+            AddToTriggerQueue(Constants.OnReceivedPlayerInput, new KeyValuePair<string, object>(Constants.Player, CurPlayer.Name), new KeyValuePair<string, object>(Constants.Action, action));
         }
 
         public void GiveEdit() {

@@ -15,6 +15,15 @@ using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum PlayerType
+{
+    HUMAN,
+    RANDOM,
+    CRAFTED,
+    PROBABILITY,
+    EVO
+}
+
 public class UIEvents : MonoBehaviour, IListener
 {
     UIDocument doc;
@@ -32,6 +41,8 @@ public class UIEvents : MonoBehaviour, IListener
     private bool stop = false;
     private int updates;
 
+    public List<PlayerType> playerTypes;
+
     private void Awake()
     {
         doc = GetComponent<UIDocument>();
@@ -41,12 +52,12 @@ public class UIEvents : MonoBehaviour, IListener
         playerStats = doc.rootVisualElement.Q<Label>("Info");
 
         callback = (ev) => Controller.StartGame();
-        button.RegisterCallback(callback);        
+        button.RegisterCallback(callback);
 
+        Academy.Instance.AutomaticSteppingEnabled = false;
         if (isTraining)
         {
             Debug.Log("Training mode");
-            Academy.Instance.AutomaticSteppingEnabled = false;
             evoBot.OnStartGame += TrainingLoop;
             //Academy.Instance.EnvironmentStep();
             //ResetEnvironment();
@@ -54,14 +65,58 @@ public class UIEvents : MonoBehaviour, IListener
         else
         {
             Debug.Log("Evaluation mode");
-            Controller = new(new List<IListener>() { this });
-            List<Player> playerList = new()
+            PlayMode();
+        }
+
+    }
+
+    private void PlayMode()
+    {
+        Controller = new(new List<IListener>() { this });
+
+        List<Player> playerList = new();
+        int numPlayers = 0;
+        if (playerTypes.Count > 1)
+        {
+            foreach (var playerType in playerTypes)
+            {
+                switch (playerType) {
+                    case PlayerType.HUMAN:
+                        playerList.Add(new Player(false, "Human", ++numPlayers));
+                        break;
+
+                    case PlayerType.RANDOM:
+                        playerList.Add(new RandomBot(false, "Random", ++numPlayers));
+                        break;
+
+                    case PlayerType.CRAFTED:
+                        playerList.Add(new CraftedBot(false, "Crafted", ++numPlayers));
+                        break;
+
+                    case PlayerType.PROBABILITY:
+                        playerList.Add(ProbabilityBot.Trickster(false, "Probability", ++numPlayers));
+                        break;
+
+                    case PlayerType.EVO:
+                        playerList.Add(evoBot.InitializeBot(false, "Evo", ++numPlayers));
+                        break;
+                }
+            }
+        }
+        else
+        {
+            playerList = new()
             {
                 //Instantiate players
-                evoBot.InitializeBot(lesson.IsWolf, "Evo", 1),
+                evoBot.InitializeBot(true, "Evo", 1),
+                ProbabilityBot.Trickster(false, "Probability", 2),
+                new CraftedBot(false, "Crafted", 3),
+                new RandomBot(false, "Random", 4)
             };
         }
 
+        Controller.SetPlayers(playerList);
+        Controller.SetupGame();
     }
 
     private void Start()
@@ -175,9 +230,9 @@ public class UIEvents : MonoBehaviour, IListener
     public void AddToList(string message)
     {
         Label label = new Label(message);
-        label.style.fontSize = 25;
+        label.style.fontSize = 20;
         label.style.color = Color.blue;
-        triggerList.hierarchy.Add(label);
+        triggerList.Add(label);
     }
 
     public void RegisterCallback(EventCallback<ClickEvent> newCallback)
@@ -194,12 +249,12 @@ public class UIEvents : MonoBehaviour, IListener
         {
             Label label = new Label(trigger.TriggerName);
             label.style.fontSize = 25;
-            triggerList.hierarchy.Add(label); 
+            triggerList.Add(label); 
         }
 
         evoBot.CheckTrigger(trigger);
         updates++;
-        if (updates > 420)
+        if (isTraining && updates > 420)
         {
             Debug.Log("Too many updates, stopping");
             return;
@@ -246,8 +301,10 @@ public class UIEvents : MonoBehaviour, IListener
 
             case Constants.OnReceivedPlayerInput:
                 string playerName = (string)trigger.TriggerData[Constants.Player];
-                Debug.Log($"Received input from {playerName}");
-                Controller.UpdateGame();
+                IAction action = (IAction)trigger.TriggerData[Constants.Action];
+                AddToList($"Received input from {playerName}, {action.GetDescription()}");
+                Debug.Log($"Received input from {playerName}, {action.GetDescription()}");
+                ManualUpdateCallback();
                 break;
 
             case Constants.OnTurnComplete:
@@ -341,6 +398,7 @@ public class UIEvents : MonoBehaviour, IListener
         {
             labelText += player.Name + ":\n VP: " + player.VP_Count + "\n Brick: " + player.BrickCount + "\n Wood: " + player.WoodCount + "\n Straw: " + player.StrawCount + "\n\n";
         }
+        labelText += "Cards on board: " + Controller.Game.GameGrid.Placements.Count;
         playerStats.text = labelText;
     }
 
@@ -359,6 +417,19 @@ public class UIEvents : MonoBehaviour, IListener
         void newCallback(ClickEvent ev)
         {
             Debug.Log(actions[actionDropdown.index].GetDescription());
+            Controller.PlayerInput(actions[actionDropdown.index]);
+            Controller.UpdateGame();
+        }
+        RegisterCallback(newCallback);
+    }
+
+    private void ManualUpdateCallback()
+    {
+        button.text = "Update Game";     
+        void newCallback(ClickEvent ev)
+        {
+            button.text = "";
+            Controller.UpdateGame();
         }
         RegisterCallback(newCallback);
     }

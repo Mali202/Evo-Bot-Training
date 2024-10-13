@@ -10,6 +10,7 @@
         public const string Player = "Player";
         public const string Players = "Players";
         public const string Actions = "Actions";
+        public const string Action = "Action";
         public const string OnGameStarted = "OnGameStarted";
         public const string OnCardPlaced = "OnCardPlaced";
         public const string OnCardDrawn = "OnCardDrawn";

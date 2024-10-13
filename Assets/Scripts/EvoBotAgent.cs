@@ -29,9 +29,9 @@ public class EvoBotAgent : Agent
     {
         bot = new EvoBot(isWolf, Name, playerNumber);
         executor = new WeightedActionExecutor(new WeightedActionParam[] {
-            new((action) => action is PlaceInstruction, 30),
-            new((action) => action is DrawAction, 15),
-            new((action) => action is DiscardAction, 15),
+            new((action) => action is PlaceInstruction, 40),
+            new((action) => action is DrawAction, 10),
+            new((action) => action is DiscardAction, 10),
             new((action) => action is (PlaySkip or PlayChangeDirection or RotateAction), 40)
         });
         bot.RequestAction = (actions) =>
